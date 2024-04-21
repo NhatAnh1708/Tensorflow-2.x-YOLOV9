@@ -1,5 +1,6 @@
 import argparse
 import logging
+
 from ultralytics import YOLO
 
 arg = argparse.ArgumentParser()

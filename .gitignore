@@ -1,4 +1,4 @@
-data/
+data_test/
 yolov9e_pb/
 yolov9/
 
@@ -8,3 +8,5 @@ weights/
 *.onnx
 *.pt
 
+# python cache
+tmp.py
