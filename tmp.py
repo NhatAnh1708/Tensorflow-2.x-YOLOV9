@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-model_path="/home/danny/Honda/Yolov9-tflite/yolov9_e_float16_quantize.tflite"
+model_path = "/home/danny/Honda/Yolov9-tflite/yolov9_e_float16_quantize.tflite"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 interpreter = tf.lite.Interpreter(
     model_path=model_path,

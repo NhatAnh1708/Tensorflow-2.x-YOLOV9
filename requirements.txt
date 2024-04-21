@@ -1,0 +1,4 @@
+numpy==1.24.4
+opencv-python==4.9.0.80
+ruff==0.4.1
+onnx-tf 

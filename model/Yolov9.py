@@ -6,7 +6,7 @@ import tensorflow as tf
 
 
 
-@dataclass  
+@dataclass 
 class Yolov9TFlite:
     model_path: str = "yolov9_e_float16_quantize.tflite"
     input_shape = (640, 640)
@@ -26,4 +26,3 @@ class Yolov9TFlite:
     def _preprocessing(self, image):
         image_resize = cv2.resize(image, (640, 640))
         print(image_resize.shape)
-
