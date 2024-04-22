@@ -1,0 +1,5 @@
+input_shape: 640
+prediction_shape: 8400
+conf_threshold: 0.2
+model_path: "weights/yolov8x_float16.tflite"
+coco_classes: "config/coco.names"

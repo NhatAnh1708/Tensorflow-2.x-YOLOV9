@@ -1,12 +1,15 @@
 data_test/
 yolov9e_pb/
 yolov9/
-
+output_tflite/
 # weights
 
 weights/
 *.onnx
 *.pt
-
+*.npy
 # python cache
 tmp.py
+
+__pycache__/
+src/__pycache__/

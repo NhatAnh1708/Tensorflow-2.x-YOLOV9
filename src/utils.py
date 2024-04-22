@@ -103,3 +103,40 @@ def xywh2xyxy(x):
     y[..., 2] = x[..., 0] + x[..., 2] / 2
     y[..., 3] = x[..., 1] + x[..., 3] / 2
     return y
+
+
+def draw_bbox(image, bbox, color=(0, 0, 255)):
+    """Draw bounding box on image."""
+    thickness = 2
+    x1, y1, x2, y2 = bbox
+    x1 = int(x1)
+    y1 = int(y1)
+    x2 = int(x2)
+    y2 = int(y2)
+    masking = (31, 31)
+    length = (x2 - x1) // 5
+    cv2.line(image, (x1, y1), (x1 + length, y1), color, thickness)
+    cv2.line(image, (x1, y1), (x1, y1 + length), color, thickness)
+    # Top-right corner
+    cv2.line(image, (x2, y1), (x2 - length, y1), color, thickness)
+    cv2.line(image, (x2, y1), (x2, y1 + length), color, thickness)
+
+    # Bottom-left corner
+    cv2.line(image, (x1, y2), (x1 + length, y2), color, thickness)
+    cv2.line(image, (x1, y2), (x1, y2 - length), color, thickness)
+
+    # Bottom-right corner
+    cv2.line(image, (x2, y2), (x2 - length, y2), color, thickness)
+    cv2.line(image, (x2, y2), (x2, y2 - length), color, thickness)
+    roi = image[y1:y2, x1:x2]
+    if roi.size == 0:
+        return None
+    blurred_roi = cv2.GaussianBlur(roi, masking, 0)
+    image[y1:y2, x1:x2] = blurred_roi
+
+def scale_bbox(bbox, model_name, input_shape):
+    if model_name == "yolov9":
+        return bbox
+    elif model_name == "yolov8":
+        return bbox * input_shape
+    
