@@ -170,15 +170,15 @@ def main():
             (0, 0, 0),
             2,
         )
-        # if count % 20 == 0 and count < 1000:
-        #     logging.warning("Loading frame")
-        #     cv2.imwrite(
-        #         f"output_tflite/{model_name}/{video_name}/frame_{str(count)}.jpg",
-        #         frame,
-            # )
-        # if count == 1000:
-        #     logging.info("Finished")
-        #     break
+        if count % 20 == 0 and count < 1000:
+            logging.warning("Loading frame")
+            cv2.imwrite(
+                f"output_tflite/{model_name}/{video_name}/frame_{str(count)}.jpg",
+                frame,
+            )
+        if count == 1000:
+            logging.info("Finished")
+            break
         
         count += 1
         cv2.imshow("video", frame)
