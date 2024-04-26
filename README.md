@@ -1,32 +1,53 @@
 # Convert YOLOv9 Model to TensorFlow Lite
 
+This repository offers scripts and instructions for converting a YOLOv9 model to TensorFlow Lite format. TensorFlow Lite is a lightweight solution for deploying machine learning models on mobile and edge devices, making it ideal for applications that require real-time object detection, such as mobile apps or embedded systems.
 
-This repository provides scripts and instructions for converting a YOLO (You Only Look Once) model to TensorFlow Lite format. TensorFlow Lite is a lightweight solution for deploying machine learning models on mobile and edge devices, making it ideal for applications that require real-time object detection, such as mobile apps or embedded systems.
+## New
+
+We now provide the model weights of TFLite (quantized INT8)<br>
+<strong font-size=30>Folder: `weights`</strong>
 
 ## Requirements
 
 - Python 3.8.10
 - TensorFlow 2.13.1
-- Others
+- Other dependencies (refer to `requirements.txt`)
 
 ## Installation
-- You need create the anaconda enviroment <br>
-Step 1:
-`conda create --name yolo9-tflite python=3.8.10` <br>
-Step 2:
-`conda activate yolo9-tflite`
-- Continue you should install all the packages in requirements.txt<br>
-`pip install -r requirements.txt`
+
+1. Create a Conda environment:
+
+    ```bash
+    conda create --name yolo9-tflite python=3.8.10
+    ```
+
+2. Activate the environment:
+
+    ```bash
+    conda activate yolo9-tflite
+    ```
+
+3. Install required packages:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 ## Convert
-- You should run script end2end converting TFLite <br>
-`bash convert_tflite.sh`
+
+1. To convert to TFLite, run the provided script:
+
+    ```bash
+    convert_tflite.sh
+    ```
 
 ## Inference
-- I have provided the config to run yolov9 <b>(config/yolov9.yaml)</b>
+1. I have provided the config to run yolov9 <b>(config/yolov9.yaml)</b>
 
-- You run to test the model <br>
-`python inference.py`
+2. You run to test the model <br>
+```bash
+python inference.py
+```
 
 ## Output
 
@@ -35,4 +56,3 @@ Step 2:
 ## Contact
 
 Email : anh1708001@gmail.com
-

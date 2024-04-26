@@ -51,7 +51,7 @@ def run_yolov8(
     interpreter.set_tensor(input_details[0]["index"], tensor)
     interpreter.invoke()
     predictions = interpreter.get_tensor(output_details[0]["index"])
-    predictions = np.array(predictions).reshape((84, prediction_shape))
+    predictions = np.array(predictions).reshape((6, prediction_shape))
 
     predictions = predictions.T
     return predictions
@@ -79,12 +79,11 @@ def main():
     else:
         video_name = video_path.split("/")[-1].split(".")[0]
     model_name = model_path.split("/")[-1].split(".")[0]
+
     cap = cv2.VideoCapture(video_path)
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Codec
 
     if not os.path.exists(f"output_tflite/{model_name}/{video_name}"):
         os.makedirs(f"output_tflite/{model_name}/{video_name}")
-    out = cv2.VideoWriter(f'output_tflite/output_video_{model_name}.avi', fourcc, 30, (input_shape, input_shape))
     labels = load_labels(path=coco_classes)
     while True:
         ret, frame = cap.read()
@@ -126,17 +125,11 @@ def main():
             bbox = scale_bbox(bbox, arg.model, input_shape)
             cls_id = int(label)
             # cls = labels[cls_id]
-            if cls_id == 0:
+            if cls_id == 1:
                 list_bboxes_person.append(bbox)
                 color = (0, 0, 128)
                 draw_bbox(image=frame, bbox=bbox, color=color)
-            if (
-                cls_id == 2
-                or cls_id == 5
-                or cls_id == 6
-                or cls_id == 7
-                or cls_id == 8
-            ):
+            if cls_id == 0:
                 list_bboxes_vehicle.append(bbox)
                 color = (0, 128, 0)
                 draw_bbox(image=frame, bbox=bbox, color=color)
@@ -170,23 +163,17 @@ def main():
             (0, 0, 0),
             2,
         )
-        # if count % 20 == 0 and count < 1000:
-        #     logging.warning("Loading frame")
-        #     cv2.imwrite(
-        #         f"output_tflite/{model_name}/{video_name}/frame_{str(count)}.jpg",
-        #         frame,
-            # )
-        # if count == 1000:
-        #     logging.info("Finished")
-        #     break
-        
+        if count % 20 == 0 and count < 1000:
+            logging.warning("Loading frame")
+            cv2.imwrite(
+                f"output_tflite/{model_name}/{video_name}/frame_{str(count)}.jpg",
+                frame,
+            )
         count += 1
         cv2.imshow("video", frame)
-        out.write(frame)
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
     cap.release()
-    out.release()
     cv2.destroyAllWindows()
 
 

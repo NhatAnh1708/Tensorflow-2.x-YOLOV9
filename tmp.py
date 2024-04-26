@@ -1,101 +1,71 @@
-import os
-import time
+# from ultralytics import YOLO
+ 
+# model = YOLO('face_plateplate.pt')
 
-import cv2
-import numpy as np
-import tensorflow as tf
+ 
+# model.export(format="coreml", nms=True, imgsz=320)
 
-model_path = "/home/danny/Honda/Yolov9-tflite/yolov9_e_float16_quantize.tflite"
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
-interpreter = tf.lite.Interpreter(
-    model_path=model_path,
-    num_threads=10,
-)
-interpreter.allocate_tensors()
-input_details = interpreter.get_input_details()
-output_details = interpreter.get_output_details()
-# Get stream from webcam
-video_path = "/home/danny/Honda/Yolov9-tflite/data_test/testcase_person.mp4"
-video_name = video_path.split("/")[-1].split(".")[0]
-model_name = model_path.split("/")[-1].split(".")[0]
-if not os.path.exists(f"output_tflite/{model_name}/{video_name}"):
-    os.makedirs(f"output_tflite/{model_name}/{video_name}")
-batch_size = 1
-frames = []
-video = cv2.VideoCapture(video_path)
-size = 640
-count = 0
 
-while True:
-    start_time = time.time()
-    ret, frame = video.read()
-    if not ret:
-        break
-    frame = cv2.resize(frame, (size, size))
-    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    frame_rgb = frame_rgb.astype(np.float32) / 255.0
-    # frame_rgb = frame_rgb.astype(np.uint8)  # Normalize
-    frame_expanded = np.expand_dims(frame_rgb, axis=0)
-    max_score = 0
-    max_detection = None
-    converted_array = np.transpose(frame_expanded, (0, 3, 1, 2))
-    interpreter.set_tensor(input_details[0]["index"], converted_array)
-    interpreter.invoke()
-    boxes = interpreter.get_tensor(output_details[0]["index"])[0]
-    output_boxes = interpreter.get_tensor(output_details[0]["index"])[0]
-    for i in range(output_boxes.shape[1]):
-        detection = output_boxes[:, i]
-        score = np.max(detection[4:])
-        if score > max_score:
-            max_score = score
-            max_detection = detection
-        if max_detection is not None and max_score >= 0.1:
-            x_center, y_center, width, height = max_detection[:4]
-            x1 = int(x_center - width / 2)
-            y1 = int(y_center - height / 2)
-            x2 = int(x_center + width / 2)
-            y2 = int(y_center + height / 2)
-            cls = np.argmax(max_detection[4:])
-            text = f"Class: {cls}, Score: {max_score:.2f}"
-            if i % 2 == 0:
-                color = (0, 255, 0)
-            color = (0, 0, 255)
-            if cls == 0:
-                text = "Person"
-                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-                cv2.putText(
-                    frame,
-                    text,
-                    (x1, y1 - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.5,
-                    color,
-                    2,
-                )
-            elif cls == 2:
-                text = "Car"
-                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-                cv2.putText(
-                    frame,
-                    text,
-                    (x1, y1 - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.5,
-                    color,
-                    2,
-                )
-            else:
-                continue
-    fps = (1 / (time.time() - start_time)) / batch_size
-    cv2.putText(
-        frame, f"FPS: {fps}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2
-    )
-    if count % 20 == 0 and count < 1000:
-        print("done: ", count)
-        cv2.imwrite(f"output_tflite/{model_name}/{video_name}/frame_{count}.jpg", frame)
-    count += 1
-    cv2.imshow("Output", frame)  # Display frame with bounding box
-    if cv2.waitKey(1) & 0xFF == ord("q"):
-        break
+# # import cv2
+# # import time 
+# import numpy as np
 
-# Release everything if job is finished
+# def noise(frame):
+#     h, w, c = frame.shape
+#     kernel_size = (h//10, w//10)
+#     new_frame = cv2.blur(frame, kernel_size)
+#     return new_frame
+# def medianfilter(img):
+#     h, w, c = img.shape
+#     img = cv2.boxFilter(img, -1, (h//10, w//10))
+#     return img
+# video = cv2.VideoCapture(0)
+
+# while True:
+#     ret, frame = video.read()
+#     start_time = time.time()
+#     frame = medianfilter(frame)
+#     fps = 1/(time.time()-start_time)
+#     fps = np.round(fps, 2)
+#     cv2.putText(frame, f'FPS: {fps}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+#     cv2.imshow('Video', frame)
+#     if cv2.waitKey(1) & 0xFF == ord('q'):
+#         break
+# video.release()
+
+
+# def pixelate_image(image, grid_size):
+# 	(h, w) = image.shape[:2]
+# 	xGridLines = np.linspace(0, w, grid_size + 1, dtype="int")
+# 	yGridLines = np.linspace(0, h, grid_size + 1, dtype="int")
+
+# 	for i in range(1, len(xGridLines)):
+# 		for j in range(1, len(yGridLines)):
+# 			cell_startX = xGridLines[j - 1]
+# 			cell_startY = yGridLines[i - 1]
+# 			cell_endX = xGridLines[j]
+# 			cell_endY = yGridLines[i]
+# 			cell = image[cell_startY:cell_endY, cell_startX:cell_endX]
+# 			(B, G, R) = [int(x) for x in cv2.mean(cell)[:3]]
+# 			cv2.rectangle(image, (cell_startX, cell_startY), (cell_endX, cell_endY),
+# 				(B, G, R), -1)
+
+# 	return image
+
+
+from moviepy.editor import VideoFileClip
+
+def convert_webm_to_mp4(input_file, output_file):
+    # Load the WebM video
+    video = VideoFileClip(input_file)
+    
+    # Save the video in MP4 format
+    video.write_videofile(output_file, codec="libx264", audio_codec="aac")
+    
+    # Close the video file
+    video.close()
+
+# Example usage
+input_file = "data_test/testcase14.webm"
+output_file = "output.mp4"
+convert_webm_to_mp4(input_file, output_file)
