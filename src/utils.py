@@ -56,6 +56,17 @@ def blob(im, return_seg=False):
     else:
         return im
 
+def blob_v1(im, return_seg=False):
+    """Convert image to 4D blob."""
+    if return_seg:
+        seg = im.astype(np.int8) 
+    im = im.transpose([2, 0, 1])
+    im = im[np.newaxis, ...]
+    im = np.ascontiguousarray(im).astype(np.int8)
+    if return_seg:
+        return im, seg
+    else:
+        return im
 
 def nms(boxes, scores, iou_threshold):
     """Non-maximum suppression."""
@@ -113,7 +124,7 @@ def draw_bbox(image, bbox, color=(0, 0, 255)):
     y1 = int(y1)
     x2 = int(x2)
     y2 = int(y2)
-    masking = (31, 31)
+    masking = (51, 51)
     length = (x2 - x1) // 5
     cv2.line(image, (x1, y1), (x1 + length, y1), color, thickness)
     cv2.line(image, (x1, y1), (x1, y1 + length), color, thickness)
@@ -134,9 +145,52 @@ def draw_bbox(image, bbox, color=(0, 0, 255)):
     blurred_roi = cv2.GaussianBlur(roi, masking, 0)
     image[y1:y2, x1:x2] = blurred_roi
 
+def draw_bbox_v1(image, bbox, color=(0, 0, 255)):
+    """Draw bounding box on image."""
+    thickness = 2
+    x1, y1, x2, y2 = bbox
+    x1 = int(x1)
+    y1 = int(y1)
+    x2 = int(x2)
+    y2 = int(y2)
+    print(x1, y1, x2, y2)
+    cv2.circle(image, (x1, y1), 5, color, thickness)
+    cv2.circle(image, (x2, y2), 5, color, thickness)
+    cv2.rectangle(image, (x1, y1), (x2, y2), color, thickness)
+
+def transform_point(point, surface_size):
+    # Tính toán tỷ lệ giữa kích thước thực tế và kích thước ảo của bề mặt
+    scale_x = surface_size[0] / (max(point[0], point[1]) - min(point[0], point[1]))
+    scale_y = surface_size[1] / (max(point[0], point[1]) - min(point[0], point[1]))
+    
+    # Áp dụng tỷ lệ cho các tọa độ
+    x = (point[0] - min(point[0], point[1])) * scale_x
+    y = surface_size[1] - ((point[1] - min(point[0], point[1])) * scale_y)  # Đảo ngược y
+    
+    return x, y
+
+def add_salt_pepper_noise(image, amount):
+    """Add salt and pepper noise to image."""
+    noisy_image = np.copy(image)
+    row, col, _ = noisy_image.shape
+    num_salt = np.ceil(amount * image.size * 0.5)
+    num_pepper = np.ceil(amount * image.size * 0.5)
+    # Add salt noise
+    salt_coords = [
+        np.random.randint(0, i - 1, int(num_salt)) for i in noisy_image.shape
+    ]
+    noisy_image[salt_coords[0], salt_coords[1], :] = 255
+    # Add pepper noise
+    pepper_coords = [
+        np.random.randint(0, i - 1, int(num_pepper)) for i in noisy_image.shape
+    ]
+    noisy_image[pepper_coords[0], pepper_coords[1], :] = 0
+    return noisy_image
+
+
 def scale_bbox(bbox, model_name, input_shape):
     if model_name == "yolov9":
         return bbox
     elif model_name == "yolov8":
+
         return bbox * input_shape
-    
