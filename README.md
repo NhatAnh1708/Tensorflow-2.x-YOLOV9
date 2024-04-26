@@ -5,7 +5,7 @@ This repository offers scripts and instructions for converting a YOLOv9 model to
 ## New
 
 We now provide the model weights of TFLite (quantized INT8)<br>
-<strong font-size=30>Folder: `weights`</strong>
+<strong font-size=30>Link: [`YOLOv9-e`](https://drive.google.com/file/d/1fWufebI8zSoOdJHG_QA87yV7tKAVJML8/view?usp=drive_link)</strong>
 
 ## Requirements
 
